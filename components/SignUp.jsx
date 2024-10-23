@@ -6,13 +6,40 @@ import {
   ImageBackground,
   TextInput,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Import icons from Expo
-import { Link } from "expo-router"; // Link for navigation
+import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
+import { auth } from "../FirebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "expo-router";
+import { Colors } from "../constants/Colors";
 
 const SignUp = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  const [error, setError] = useState(null);
+
+  const router = useRouter();
+
+  const handleSignUp = async () => {
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      console.log("User created successfully");
+      router.push("/login");
+    } catch (error) {
+      console.error("Error signing up:", error.message);
+      setError(error.message);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -23,20 +50,7 @@ const SignUp = () => {
       >
         <View style={styles.innerContainer}>
           <Text style={styles.title}>Sign Up</Text>
-
-          <View style={styles.inputContainer}>
-            <Ionicons
-              name="person-outline"
-              size={20}
-              color="#aaa"
-              style={styles.icon}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Username"
-              placeholderTextColor="#aaa"
-            />
-          </View>
+          {error && <Text style={styles.errorText}>{error}</Text>}
 
           <View style={styles.inputContainer}>
             <Ionicons
@@ -49,6 +63,8 @@ const SignUp = () => {
               style={styles.input}
               placeholder="Email"
               placeholderTextColor="#aaa"
+              value={email}
+              onChangeText={setEmail}
             />
           </View>
 
@@ -64,6 +80,8 @@ const SignUp = () => {
               placeholder="Password"
               placeholderTextColor="#aaa"
               secureTextEntry={!passwordVisible}
+              value={password}
+              onChangeText={setPassword}
             />
             <TouchableOpacity
               onPress={() => setPasswordVisible(!passwordVisible)}
@@ -89,8 +107,10 @@ const SignUp = () => {
               placeholder="Confirm Password"
               placeholderTextColor="#aaa"
               secureTextEntry={!confirmPasswordVisible}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
             />
-            <TouchableOpacity
+            <Pressable
               onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
               style={styles.eyeIcon}
             >
@@ -101,10 +121,10 @@ const SignUp = () => {
                 size={20}
                 color="#aaa"
               />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={handleSignUp}>
             <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
 
@@ -136,12 +156,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "100%",
     alignItems: "center",
-    // backgroundColor: "rgba(255, 255, 255, 0.9)", // Slightly transparent for contrast
   },
   title: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "#000",
+    color: Colors.secondary,
     marginTop: 150,
     marginBottom: 20,
   },
@@ -153,7 +172,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: "100%",
     marginBottom: 15,
-    backgroundColor: "#fff", // Solid white background for input container
+    backgroundColor: "#fff",
   },
   icon: {
     paddingHorizontal: 10,
@@ -163,12 +182,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 10,
     backgroundColor: "#fff", // Solid white background for input
+    outlineStyle: "none",
   },
   eyeIcon: {
     padding: 10,
   },
   button: {
-    backgroundColor: "#0f23f0",
+    backgroundColor: Colors.secondary,
     padding: 15,
     borderRadius: 50,
     width: "100%",
@@ -184,7 +204,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   link: {
-    color: "#0f23f0",
+    color: Colors.secondary,
     fontWeight: "bold",
   },
 });

@@ -1,7 +1,12 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth"; // Import Firebase Auth
+import {
+  initializeAuth,
+  getAuth,
+  getReactNativePersistence,
+} from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -18,4 +23,14 @@ export const app = initializeApp(firebaseConfig);
 // Initialize Firestore
 export const db = getFirestore(app);
 // Initialize Firebase Authentication
-export const auth = getAuth(app); // Export the auth instance
+// Initialize Firebase Auth with AsyncStorage for persistence
+let auth;
+try {
+  auth = getAuth(app);
+} catch (error) {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage), // This enables persistence across sessions
+  });
+}
+
+export { auth };

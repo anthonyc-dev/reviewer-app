@@ -1,14 +1,45 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import {
+  StyleSheet,
+  ScrollView,
+  View,
+  ActivityIndicator,
+  SafeAreaView,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import Header from "../../components/home/Header";
+import Slider from "../../components/home/Slider";
+import Topic from "../../components/home/Topic";
+import { Colors } from "../../constants/Colors";
 
-const home = () => {
+const Home = () => {
   return (
-    <View>
-      <Text>home</Text>
-    </View>
+    <SafeAreaView>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
+          {/* Header */}
+          <Header />
+          {/* Slider */}
+          <Slider />
+          {/* Topics */}
+          <Topic />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
-export default home;
+export default Home;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

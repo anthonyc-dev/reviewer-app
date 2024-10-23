@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,76 +6,122 @@ import {
   ImageBackground,
   TextInput,
   TouchableOpacity,
+  Alert,
+  Pressable,
+  ActivityIndicator,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Import icons from Expo
+import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
+import { auth } from "../FirebaseConfig";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "expo-router";
+import { Colors } from "../constants/Colors";
 
 const LoginComponent = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+
+  const handleLogin = async () => {
+    if (email === "" || password === "") {
+      Alert.alert("Error", "Please enter both email and password.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log("User logged in successfully");
+      Alert.alert("Success", "Logged in successfully");
+      router.push("/home");
+      setLoading(false);
+    } catch (error) {
+      console.error("Login error:", error.message);
+      setError(error.message);
+      Alert.alert("Error", error.message);
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require("../assets/images/bg-image2.jpg")}
-        resizeMode="cover"
-        style={styles.backgroundImage}
-      >
-        <View style={styles.innerContainer}>
-          <View style={{ justifyContent: "center" }}>
-            <Text style={styles.title}>Log In</Text>
-          </View>
+      {!loading ? (
+        <ImageBackground
+          source={require("../assets/images/bg-image2.jpg")}
+          resizeMode="cover"
+          style={styles.backgroundImage}
+        >
+          <View style={styles.innerContainer}>
+            <View style={{ justifyContent: "center" }}>
+              <Text style={styles.title}>Log In</Text>
+            </View>
 
-          <View style={styles.inputContainer}>
-            <Ionicons
-              name="mail-outline"
-              size={20}
-              color="#aaa"
-              style={styles.icon}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              placeholderTextColor="#aaa"
-            />
-          </View>
+            {error && <Text style={styles.errorText}>{error}</Text>}
 
-          <View style={styles.inputContainer}>
-            <Ionicons
-              name="lock-closed-outline"
-              size={20}
-              color="#aaa"
-              style={styles.icon}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              placeholderTextColor="#aaa"
-              secureTextEntry={!passwordVisible}
-            />
-            <TouchableOpacity
-              onPress={() => setPasswordVisible(!passwordVisible)}
-              style={styles.eyeIcon}
-            >
+            <View style={styles.inputContainer}>
               <Ionicons
-                name={passwordVisible ? "eye-off-outline" : "eye-outline"}
+                name="mail-outline"
                 size={20}
                 color="#aaa"
+                style={styles.icon}
               />
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor="#aaa"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color="#aaa"
+                style={styles.icon}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="#aaa"
+                secureTextEntry={!passwordVisible}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <Pressable
+                onPress={() => setPasswordVisible(!passwordVisible)}
+                style={styles.eyeIcon}
+              >
+                <Ionicons
+                  name={passwordVisible ? "eye-off-outline" : "eye-outline"}
+                  size={20}
+                  color="#aaa"
+                />
+              </Pressable>
+            </View>
+
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Log In</Text>
             </TouchableOpacity>
+
+            <Text style={styles.switchText}>
+              Don't have an account?{" "}
+              <Link href={"/signup"} style={styles.link}>
+                Sign Up
+              </Link>
+            </Text>
           </View>
-
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Log In</Text>
-          </TouchableOpacity>
-
-          <Text style={styles.switchText}>
-            Don't have an account?{" "}
-            <Link href={"/signup"} style={styles.link}>
-              Sign Up
-            </Link>
-          </Text>
+        </ImageBackground>
+      ) : (
+        <View style={styles.backgroundImage}>
+          <ActivityIndicator size="large" color={Colors.primary} />
         </View>
-      </ImageBackground>
+      )}
     </View>
   );
 };
@@ -92,7 +138,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   innerContainer: {
-    // backgroundColor: "rgba(255, 255, 255, 0.8)",
     padding: 20,
     borderRadius: 10,
     width: "100%",
@@ -101,7 +146,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 30,
     fontWeight: "bold",
-    color: "#000",
+    color: Colors.secondary,
     marginTop: 50,
     marginBottom: 20,
   },
@@ -113,7 +158,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: "100%",
     marginBottom: 15,
-    backgroundColor: "#fff", // Solid white background for input container
+    backgroundColor: "#fff",
   },
   icon: {
     paddingHorizontal: 10,
@@ -122,13 +167,13 @@ const styles = StyleSheet.create({
     height: 50,
     flex: 1,
     paddingHorizontal: 10,
-    backgroundColor: "#fff", // Solid white background for input container
+    outlineStyle: "none",
   },
   eyeIcon: {
     padding: 10,
   },
   button: {
-    backgroundColor: "#0f23f0",
+    backgroundColor: Colors.secondary,
     padding: 15,
     borderRadius: 50,
     width: "100%",
@@ -144,7 +189,11 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   link: {
-    color: "#0f23f0",
+    color: Colors.secondary,
     fontWeight: "bold",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
 });

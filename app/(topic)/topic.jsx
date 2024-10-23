@@ -5,52 +5,34 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect } from "react";
-import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
-import { useNavigation } from "expo-router";
+import React from "react";
+import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
 import { Colors } from "../../constants/Colors";
 
-const settingsOptions = [
-  { id: "1", title: "Profile", icon: "person" },
-  { id: "2", title: "Notifications", icon: "notifications" },
-  { id: "3", title: "Privacy", icon: "lock-closed" },
-  { id: "4", title: "About", icon: "information-circle" },
-  { id: "5", title: "Logout", icon: "log-out" },
+const categories = [
+  { id: "1", title: "Reviewer", icon: "book" },
+  { id: "2", title: "Exercises", icon: "checkmark-circle" },
+  { id: "3", title: "Summary", icon: "information-circle" },
 ];
 
-const Settings = () => {
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerShown: true,
-      title: "Settings",
-      headerStyle: {
-        backgroundColor: Colors.secondary,
-      },
-      headerTintColor: "#fff",
-      headerTitleStyle: {
-        fontFamily: "outfit-bold",
-      },
-    });
-  }, []);
+const Topic = () => {
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.optionContainer}>
+    <TouchableOpacity style={styles.categoryContainer}>
       <Ionicons
         name={item.icon}
         size={24}
         color={Colors.primary}
         style={styles.icon}
       />
-      <Text style={styles.optionText}>{item.title}</Text>
+      <Text style={styles.categoryText}>{item.title}</Text>
     </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Settings</Text>
+      <Text style={styles.header}>Review materials</Text>
       <FlatList
-        data={settingsOptions}
+        data={categories}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
@@ -59,7 +41,7 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default Topic;
 
 const styles = StyleSheet.create({
   container: {
@@ -74,7 +56,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#333",
   },
-  optionContainer: {
+  categoryContainer: {
     flexDirection: "row",
     alignItems: "center",
     padding: 15,
@@ -93,7 +75,7 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 15, // Space between icon and text
   },
-  optionText: {
+  categoryText: {
     fontSize: 18,
     color: "#333",
     fontFamily: "outfit",

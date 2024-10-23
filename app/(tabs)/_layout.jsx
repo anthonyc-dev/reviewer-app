@@ -1,12 +1,29 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Entypo, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 import Fontisto from "@expo/vector-icons/Fontisto";
-import { Colors } from "./../../constants/Colors";
+import { Colors } from "../../constants/Colors";
 
 export default function TabLayout() {
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: "#fff",
+        tabBarStyle: {
+          backgroundColor: Colors.secondary,
+          borderTopLeftRadius: 20, // Add top-left corner radius
+          borderTopRightRadius: 20, // Keep top-right corner sharp if desired
+          overflow: "hidden", // Ensure that the corner radius is a
+          height: 60,
+        },
+        tabBarLabelStyle: {
+          fontFamily: "outfit", // Apply font family to tab labels
+          fontSize: 14, // Set font size (adjust as needed)
+        },
+      }}
+    >
       <Tabs.Screen
         name="home"
         options={{
@@ -17,11 +34,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="search"
         options={{
-          tabBarLabel: "Profile",
+          tabBarLabel: "Search",
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="search" size={24} color={color} />
+            <Feather name="search" size={24} color={color} />
           ),
         }}
       />

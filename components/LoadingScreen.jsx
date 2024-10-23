@@ -1,60 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, ImageBackground, Text } from "react-native";
-import * as Progress from "react-native-progress"; // Import the progress bar library
-import { useRouter } from "expo-router"; // Import useRouter
+import {
+  StyleSheet,
+  View,
+  ImageBackground,
+  Text,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import { useRouter } from "expo-router";
+import NetInfo from "@react-native-community/netinfo";
 
 const LoadingScreen = () => {
-  const [progress, setProgress] = useState(0.0);
-  const router = useRouter(); // Initialize the router
+  const [loading, setLoading] = useState(true);
+  const [isConnected, setIsConnected] = useState(true);
+  const router = useRouter();
 
-  // Simulate a loading process by updating progress
+  // Check network connectivity on component mount
   useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev < 1) {
-          return prev + 0.1; // Increment the progress
-        }
-        return prev; // Return the current progress
-      });
-    }, 500); // Update progress every 500ms
-
-    // Cleanup on unmount
-    return () => clearInterval(interval);
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      setIsConnected(state.isConnected);
+    });
+    // Clean up the event listener
+    return () => unsubscribe();
   }, []);
 
-  // Effect to navigate when progress reaches 100%
   useEffect(() => {
-    if (progress >= 1) {
-      router.push("/login"); // Navigate to the login screen
+    if (isConnected) {
+      // Simulate a loading process
+      const timer = setTimeout(() => {
+        setLoading(false);
+        router.push("/login");
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    } else {
+      Alert.alert(
+        "No Internet",
+        "Please check your internet connection and try again."
+      );
     }
-  }, [progress, router]); // Depend on progress and router
+  }, [isConnected, router]);
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require("../assets/images/bg-image.jpg")}
-        resizeMode="cover"
-        style={styles.backgroundImage}
-      >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            position: "absolute",
-            bottom: 150,
-          }}
+      {loading ? (
+        <ImageBackground
+          source={require("../assets/images/bg-image.jpg")}
+          resizeMode="cover"
+          style={styles.backgroundImage}
         >
-          <Progress.Bar
-            progress={progress}
-            width={200} // Adjust the width of the bar
-            color="#0f23f0"
-            unfilledColor="#ffffff"
-            height={2}
-          />
-          <Text style={styles.text}>Loading {Math.floor(progress * 100)}%</Text>
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#000" />
+            <Text style={styles.text}>
+              {isConnected ? "" : "Waiting for connection..."}
+            </Text>
+          </View>
+        </ImageBackground>
+      ) : (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#000" />
         </View>
-      </ImageBackground>
+      )}
     </View>
   );
 };
@@ -68,13 +74,19 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     flex: 1,
-    justifyContent: "center", // Center content vertically
-    alignItems: "center", // Center content horizontally
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center", // Center vertically
+    alignItems: "center", // Center horizontally
+    position: "absolute",
   },
   text: {
-    marginTop: 10, // Add some spacing between the progress bar and text
+    marginTop: 10,
     color: "white",
     fontSize: 15,
-    fontWeight: "bold",
+    fontWeight: "outfit-medium",
   },
 });
