@@ -10,16 +10,38 @@ import { Ionicons } from "@expo/vector-icons"; // Import Ionicons for icons
 import { Colors } from "../../constants/Colors";
 
 const categories = [
-  { id: "1", title: "Reviewer", icon: "book" },
-  { id: "2", title: "Exercises", icon: "checkmark-circle" },
-  { id: "3", title: "Summary", icon: "information-circle" },
+  {
+    id: "1",
+    title: "Video Lectures",
+    icon: "videocam-outline",
+  },
+  {
+    id: "2",
+    title: "Review Materials",
+    icon: "book-outline",
+  },
+  {
+    id: "4",
+    title: "Pre Test",
+    icon: "document-text-outline",
+  },
+  {
+    id: "5",
+    title: "Post Test",
+    icon: "document-text-outline",
+  },
+  {
+    id: "6",
+    title: "Evaluation Exam",
+    icon: "checkmark-done-outline",
+  },
 ];
 
 const Topic = () => {
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.categoryContainer}>
       <Ionicons
-        name={item.icon}
+        name={item.icon} // Use icon name from the categories array
         size={24}
         color={Colors.primary}
         style={styles.icon}
@@ -69,8 +91,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOpacity: 0.2,
+    shadowRadius: 2.5,
+    elevation: 2, // Android shadow
   },
   icon: {
     marginRight: 15, // Space between icon and text

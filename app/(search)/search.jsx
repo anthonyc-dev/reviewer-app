@@ -6,6 +6,7 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
@@ -55,21 +56,40 @@ const Search = () => {
       </View>
 
       {/* Render filtered results */}
-      <FlatList
-        data={filteredData}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.resultItem}
-            onPress={() => router.push("/topic")}
+      {filteredData.length > 0 ? (
+        <FlatList
+          data={filteredData}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.resultItem}
+              onPress={() => router.push("/topicList")}
+            >
+              <Image source={item.image} style={styles.resultImage} />
+              <Text style={styles.resultText}>{item.name}</Text>
+            </TouchableOpacity>
+          )}
+          showsVerticalScrollIndicator={false}
+          style={styles.resultList}
+        />
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "outfit",
+            }}
           >
-            <Image source={item.image} style={styles.resultImage} />
-            <Text style={styles.resultText}>{item.name}</Text>
-          </TouchableOpacity>
-        )}
-        showsVerticalScrollIndicator={false}
-        style={styles.resultList}
-      />
+            Not Found.
+          </Text>
+        </View>
+      )}
+      <StatusBar style="auto" />
     </View>
   );
 };

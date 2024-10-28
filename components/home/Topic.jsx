@@ -16,11 +16,6 @@ const TopicList = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>#Review materials</Text>
-        {/* <Link href={"/lessons"}>
-          <Text style={styles.viewAllText}>
-            View all
-          </Text>
-        </Link> */}
       </View>
 
       {/* Using View and map to render topics in a grid layout */}
@@ -40,7 +35,6 @@ export default TopicList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
     backgroundColor: "#f8f9fa",
   },
   header: {
@@ -86,6 +80,6 @@ const styles = StyleSheet.create({
   topicImage: {
     width: "100%", // Take full width of the parent container
     height: 150, // Set a height for the image
-    resizeMode: "cover", // Cover the entire area of the container
+    resizeMode: "contain", // Show the entire image within the container
   },
 });

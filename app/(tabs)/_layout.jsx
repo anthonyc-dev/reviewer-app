@@ -16,7 +16,6 @@ export default function TabLayout() {
           borderTopLeftRadius: 20, // Add top-left corner radius
           borderTopRightRadius: 20, // Keep top-right corner sharp if desired
           overflow: "hidden", // Ensure that the corner radius is a
-          height: 60,
         },
         tabBarLabelStyle: {
           fontFamily: "outfit", // Apply font family to tab labels

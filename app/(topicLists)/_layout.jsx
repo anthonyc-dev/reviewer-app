@@ -10,9 +10,9 @@ const TopicLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="topic"
+        name="topicList"
         options={{
-          title: " Review materials",
+          title: " Topic List",
           headerStyle: {
             backgroundColor: Colors.secondary,
           },
@@ -27,7 +27,7 @@ const TopicLayout = () => {
           //       name="arrow-back"
           //       size={24}
           //       color="#fff"
-          //       style={{ marginLeft: 16 }} // Adjust margin if needed
+          //       style={{ marginLeft: 50 }} // Adjust margin if needed
           //       onPress={() => router.back()} // Go back to the previous screen
           //     />
           //   </Link>

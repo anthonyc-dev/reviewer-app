@@ -8,7 +8,7 @@ import {
 import React, { useState, useEffect } from "react";
 import Header from "../../components/home/Header";
 import Slider from "../../components/home/Slider";
-import Topic from "../../components/home/Topic";
+import TopicList from "../../components/home/Topic";
 import { Colors } from "../../constants/Colors";
 
 const Home = () => {
@@ -24,7 +24,7 @@ const Home = () => {
           {/* Slider */}
           <Slider />
           {/* Topics */}
-          <Topic />
+          <TopicList />
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -41,8 +41,35 @@ const LoginComponent = () => {
       setLoading(false);
     } catch (error) {
       console.error("Login error:", error.message);
-      setError(error.message);
-      Alert.alert("Error", error.message);
+
+      // Handle Firebase error codes with more user-friendly messages
+      let errorMessage;
+      switch (error.code) {
+        case "auth/invalid-email":
+          errorMessage =
+            "The email address is badly formatted. Please check your input.";
+          break;
+        case "auth/user-disabled":
+          errorMessage =
+            "This account has been disabled. Please contact support.";
+          break;
+        case "auth/user-not-found":
+          errorMessage =
+            "No user found with this email. Please check your credentials or sign up.";
+          break;
+        case "auth/wrong-password":
+          errorMessage = "The password is incorrect. Please try again.";
+          break;
+        case "auth/invalid-credential":
+          errorMessage = "Invalid credential.";
+          break;
+        default:
+          errorMessage =
+            "An unexpected error occurred. Please try again later.";
+      }
+
+      setError(errorMessage);
+      Alert.alert("Error", errorMessage);
       setLoading(false);
     }
   };

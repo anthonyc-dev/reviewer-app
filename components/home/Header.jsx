@@ -6,10 +6,10 @@ import { Colors } from "../../constants/Colors";
 const CoolHeader = () => {
   return (
     <View style={styles.headerContainer}>
-      <TouchableOpacity style={styles.iconContainer}>
+      {/* <TouchableOpacity style={styles.iconContainer}>
         <Icon name="menu-outline" size={28} color="#fff" />
-      </TouchableOpacity>
-      <Text style={styles.headerText}>My Cool App</Text>
+      </TouchableOpacity> */}
+      <Text style={styles.headerText}>Home</Text>
       <TouchableOpacity style={styles.iconContainer}>
         <Icon name="person-circle-outline" size={28} color="#fff" />
       </TouchableOpacity>

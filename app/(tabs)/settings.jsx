@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect } from "react";
-import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import { Colors } from "../../constants/Colors";
 
@@ -34,6 +34,7 @@ const Settings = () => {
       },
     });
   }, []);
+
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.optionContainer}>
       <Ionicons
@@ -43,6 +44,12 @@ const Settings = () => {
         style={styles.icon}
       />
       <Text style={styles.optionText}>{item.title}</Text>
+      <AntDesign
+        name="right"
+        size={20}
+        color={Colors.primary}
+        style={styles.arrowIcon}
+      />
     </TouchableOpacity>
   );
 
@@ -94,8 +101,12 @@ const styles = StyleSheet.create({
     marginRight: 15, // Space between icon and text
   },
   optionText: {
+    flex: 1, // Pushes the arrow icon to the right
     fontSize: 18,
     color: "#333",
     fontFamily: "outfit",
+  },
+  arrowIcon: {
+    marginLeft: "auto", // Ensures arrow is on the far right
   },
 });
