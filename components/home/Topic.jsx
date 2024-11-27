@@ -1,28 +1,62 @@
-import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import { Colors } from "../../constants/Colors";
-
-const topics = [
-  { id: "1", img: require("../../assets/images/1.jpg") },
-  { id: "2", img: require("../../assets/images/2.jpg") },
-  { id: "3", img: require("../../assets/images/3.jpg") },
-  { id: "4", img: require("../../assets/images/4.jpg") },
-  { id: "5", img: require("../../assets/images/5.jpg") },
-  { id: "6", img: require("../../assets/images/6.jpg") },
-];
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import { db } from "../../FirebaseConfig"; // Ensure the path to FirebaseConfig is correct
+import { collection, onSnapshot } from "firebase/firestore"; // Import Firestore snapshot method
 
 const TopicList = () => {
+  const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch materials data in real-time from Firestore
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(db, "materials"),
+      (querySnapshot) => {
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTopics(data); // Update the topics state with fetched data
+        setLoading(false); // Set loading to false once the data is fetched
+      },
+      (error) => {
+        console.error("Error fetching materials:", error);
+        setLoading(false); // Handle errors and stop loading
+      }
+    );
+
+    // Cleanup the listener on unmount
+    return () => unsubscribe();
+  }, []);
+
+  // If data is still loading, show an activity indicator
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007BFF" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>#Review materials</Text>
+        <Text style={styles.headerText}>#Review Materials</Text>
       </View>
 
-      {/* Using View and map to render topics in a grid layout */}
+      {/* Display topics in a grid layout */}
       <View style={styles.gridContainer}>
         {topics.map((topic) => (
           <TouchableOpacity key={topic.id} style={styles.topicItem}>
-            <Image source={topic.img} style={styles.topicImage} />
+            {/* Assuming the `imageUrl` field contains the image URL */}
+            <Image source={{ uri: topic.imageUrl }} style={styles.topicImage} />
           </TouchableOpacity>
         ))}
       </View>
@@ -52,9 +86,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     paddingLeft: 20,
   },
-  viewAllText: {
-    color: Colors.secondary,
-  },
   gridContainer: {
     flexDirection: "row", // Arrange items in a row
     flexWrap: "wrap", // Allow wrapping to the next line
@@ -80,6 +111,11 @@ const styles = StyleSheet.create({
   topicImage: {
     width: "100%", // Take full width of the parent container
     height: 150, // Set a height for the image
-    resizeMode: "contain", // Show the entire image within the container
+    resizeMode: "cover", // Use cover to ensure the image fills the container
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

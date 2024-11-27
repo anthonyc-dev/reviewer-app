@@ -1,15 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, useRouter } from "expo-router";
 import { FontAwesome, Feather, Fontisto } from "@expo/vector-icons";
+import { Colors } from "../../../constants/Colors";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import { BottomNavigation } from "react-native-paper";
 import { CommonActions } from "@react-navigation/native";
-import { Colors } from "../../constants/Colors";
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
+        // tabBarActiveTintColor: Colors.primary,
+        // tabBarStyle: {
+        //   // height: 65,
+        //   // paddingBottom: 10,
+        //   shadowColor: "#000",
+        //   shadowOpacity: 0.2,
+        //   shadowOffset: { width: 0, height: 5 },
+        //   shadowRadius: 10,
+        //   elevation: 10,
+        //   overflow: "hidden",
+        //   backgroundColor: Colors.secondary,
+        // },
+        // tabBarLabelStyle: {
+        //   fontFamily: "outfit",
+        //   fontSize: 14,
+        //   fontWeight: "600",
+        // },
+        // tabBarIconStyle: {
+        //   marginTop: 5,
+        // },
       }}
       tabBar={({ navigation, state, descriptors, insets }) => (
         <BottomNavigation.Bar
@@ -65,20 +87,24 @@ export default function TabLayout() {
       )}
     >
       <Tabs.Screen
-        name="home"
+        name="list"
         options={{
-          tabBarLabel: "Home",
+          tabBarLabel: "List",
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="home" size={24} color={Colors.secondary} /> // Icon color set to Colors.primary
+            <FontAwesome6
+              name="list-check"
+              size={24}
+              color={Colors.secondary}
+            />
           ),
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="add"
         options={{
-          tabBarLabel: "Search",
+          tabBarLabel: "Add",
           tabBarIcon: ({ color }) => (
-            <Feather name="search" size={24} color={Colors.secondary} /> // Icon color set to Colors.secondary
+            <AntDesign name="addfolder" size={24} color={Colors.secondary} />
           ),
         }}
       />
@@ -91,7 +117,7 @@ export default function TabLayout() {
               name="player-settings"
               size={24}
               color={Colors.secondary}
-            /> // Icon color set to Colors.primary
+            />
           ),
         }}
       />

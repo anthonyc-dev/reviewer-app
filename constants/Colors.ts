@@ -25,4 +25,5 @@ export const Colors = {
   },
   primary: "#F3C623",
   secondary: "#091057",
+  bgColor: "#f0f4f8",
 };

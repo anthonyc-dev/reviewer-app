@@ -1,18 +1,94 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  StatusBar,
+} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { Colors } from "../../constants/Colors";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const CoolHeader = () => {
   return (
-    <View style={styles.headerContainer}>
-      {/* <TouchableOpacity style={styles.iconContainer}>
-        <Icon name="menu-outline" size={28} color="#fff" />
-      </TouchableOpacity> */}
-      <Text style={styles.headerText}>Home</Text>
-      <TouchableOpacity style={styles.iconContainer}>
-        <Icon name="person-circle-outline" size={28} color="#fff" />
-      </TouchableOpacity>
+    <View
+      style={{
+        padding: 20,
+        paddingTop: 40,
+        backgroundColor: Colors.secondary,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+      }}
+    >
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        <Image
+          source={{
+            uri: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+          }}
+          style={{
+            width: 45,
+            height: 45,
+            borderRadius: 99,
+          }}
+        />
+        <View>
+          <Text
+            style={{
+              color: "#fff",
+              fontFamily: "outfit",
+            }}
+          >
+            Welcome,
+          </Text>
+          <Text
+            style={{
+              fontSize: 19,
+              color: "#fff",
+              fontFamily: "outfit-medium",
+            }}
+          >
+            John Doe
+          </Text>
+        </View>
+      </View>
+      <View
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: 10,
+          alignItems: "center",
+          backgroundColor: "#fff",
+          padding: 10,
+          marginVertical: 10,
+          marginTop: 15,
+          borderRadius: 8,
+        }}
+      >
+        <Ionicons name="search" size={24} color={Colors.primary} />
+        <TextInput
+          placeholder="Search..."
+          style={{
+            fontFamily: "outfit",
+            fontSize: 16,
+          }}
+        ></TextInput>
+      </View>
+      <StatusBar
+        style="light"
+        backgroundColor="#0F014B"
+        translucent={false}
+        barStyle="light-content"
+      />
     </View>
   );
 };

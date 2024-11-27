@@ -40,16 +40,23 @@ const Slider = () => {
     return (
       <View
         style={{
-          width: 300,
-          height: 150,
-          borderRadius: 15,
-          marginRight: 15,
-          display: "flex",
+          flex: 1,
           justifyContent: "center",
           alignItems: "center",
         }}
       >
-        <ActivityIndicator size="large" color={Colors.primary} />
+        <View
+          style={{
+            width: 300,
+            height: 150,
+            borderRadius: 15,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
       </View>
     );
   }

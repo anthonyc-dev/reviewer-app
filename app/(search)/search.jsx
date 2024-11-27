@@ -2,94 +2,102 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   FlatList,
   Image,
   TouchableOpacity,
-  StatusBar,
+  useColorScheme,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons"; // Import Ionicons
 import { Colors } from "../../constants/Colors"; // Ensure Colors is defined
-import { Link } from "expo-router";
 import { useRouter } from "expo-router";
-
-const sampleData = [
-  {
-    name: "Criminal Law and Jurisprudence",
-    image: require("../../assets/images/1.jpg"),
-  },
-  {
-    name: "Law Enforcement Administration",
-    image: require("../../assets/images/2.jpg"),
-  },
-  {
-    name: "Crime Detection and Investigation",
-    image: require("../../assets/images/3.jpg"),
-  },
-  { name: "Forensic Science", image: require("../../assets/images/4.jpg") },
-  { name: "Criminology", image: require("../../assets/images/5.jpg") },
-  { name: "Correction", image: require("../../assets/images/6.jpg") },
-];
+import { Searchbar } from "react-native-paper";
+import { db } from "../../FirebaseConfig";
+import { onSnapshot, collection } from "firebase/firestore";
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [materials, setMaterials] = useState([]);
   const router = useRouter();
+  const colorScheme = useColorScheme();
 
-  // Filter the sample data based on the search term
-  const filteredData = sampleData.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    // Set up Firestore listener to fetch data from the "materials" collection
+    const unsubscribe = onSnapshot(
+      collection(db, "materials"),
+      (snapshot) => {
+        const fetchedMaterials = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setMaterials(fetchedMaterials);
+      },
+      (error) => {
+        console.error("Error fetching materials:", error);
+      }
+    );
+
+    // Clean up the listener on component unmount
+    return () => unsubscribe();
+  }, []);
+
+  // Filter the fetched materials based on the search term
+  const filteredData = materials.filter(
+    (item) =>
+      item.title && // Check if item.name is defined
+      item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <View style={styles.container}>
-      {/* Search Bar */}
-      <View style={styles.searchBarContainer}>
-        <Ionicons name="search" size={24} color={Colors.primary} />
-        <TextInput
-          placeholder="Search..."
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-          style={styles.searchInput}
-        />
-      </View>
+      <Searchbar
+        placeholder="Search"
+        onChangeText={setSearchTerm}
+        value={searchTerm}
+        iconColor={Colors.primary}
+        style={{
+          marginTop: 10,
+          fontFamily: "outfit",
+        }}
+      />
 
       {/* Render filtered results */}
       {filteredData.length > 0 ? (
         <FlatList
           data={filteredData}
-          keyExtractor={(item) => item.name}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.resultItem}
-              onPress={() => router.push("/topicList")}
+              onPress={() => {
+                router.push({
+                  pathname: "/subject/[id]", // New edit screen path
+                  params: {
+                    id: item.id,
+                    category: item.category,
+                    title: item.title,
+                    imageUrl: item.imageUrl,
+                    videoUrls: item.videoUrls,
+                    pdfUrls: item.pdfUrls,
+                  },
+                });
+              }}
             >
-              <Image source={item.image} style={styles.resultImage} />
-              <Text style={styles.resultText}>{item.name}</Text>
+              <Image
+                source={{ uri: item.imageUrl }}
+                style={styles.resultImage}
+              />
+              <Text style={styles.resultText}>{item.title}</Text>
             </TouchableOpacity>
           )}
           showsVerticalScrollIndicator={false}
           style={styles.resultList}
         />
       ) : (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontFamily: "outfit",
-            }}
-          >
-            Not Found.
-          </Text>
+        <View style={styles.notFoundContainer}>
+          <Text style={styles.notFoundText}>Not Found.</Text>
         </View>
       )}
-      <StatusBar style="auto" />
     </View>
   );
 };
@@ -102,51 +110,35 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "#f8f9fa",
   },
-  searchBarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 10,
-    width: "100%",
-    marginVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 2.5,
-    elevation: 2, // Android shadow
-  },
-  searchInput: {
-    flex: 1,
-    fontFamily: "outfit",
-    fontSize: 16,
-    marginLeft: 10, // Space between icon and input
-    outlineStyle: "none", // For web use
-  },
   resultList: {
     marginTop: 10,
   },
   resultItem: {
-    flexDirection: "row", // Align items in a row
-    alignItems: "center", // Center align items vertically
+    flexDirection: "row",
+    alignItems: "center",
     padding: 15,
     backgroundColor: "#ffffff",
-    borderRadius: 8, // Add rounded corners
-    marginBottom: 10, // Space between items
-    elevation: 1, // Add shadow effect
+    borderRadius: 8,
+    marginBottom: 10,
+    elevation: 1,
   },
   resultImage: {
-    width: 50, // Keep the size of the image
+    width: 50,
     height: 50,
-    marginRight: 15, // Space between image and text
-    resizeMode: "cover", // Ensure image covers the space
+    marginRight: 15,
+    resizeMode: "cover",
   },
   resultText: {
     fontSize: 16,
-    fontWeight: "500", // Bold text for better visibility
+    fontWeight: "500",
+    fontFamily: "outfit",
+  },
+  notFoundContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  notFoundText: {
     fontFamily: "outfit",
   },
 });

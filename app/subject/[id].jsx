@@ -4,52 +4,25 @@ import {
   View,
   FlatList,
   TouchableOpacity,
+  Alert,
 } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../../constants/Colors";
-import { Link, useNavigation } from "expo-router";
-
-const categories = [
-  {
-    id: "1",
-    title: "Introduction to Criminology",
-    icon: "book-outline",
-  },
-  {
-    id: "2",
-    title: "Theories of Crime Causation",
-    icon: "book-outline",
-  },
-  {
-    id: "4",
-    title: "Professional Conduct and Ethical",
-    icon: "book-outline",
-  },
-  {
-    id: "5",
-    title: "Juvenile Deliquency and Juvenile",
-    icon: "book-outline",
-  },
-  {
-    id: "6",
-    title: "Dispute Resolution and Crisis/Incident Management",
-    icon: "book-outline",
-  },
-  {
-    id: "7",
-    title: "Human Behavior and Victimonology",
-    icon: "book-outline",
-  },
-];
+import { Link, router, useLocalSearchParams, useNavigation } from "expo-router";
+import { db } from "../../FirebaseConfig";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const TopicLists = () => {
+  const [material, setMaterial] = useState([]); // Material data state, set as array for FlatList
+  const { category } = useLocalSearchParams(); // Retrieve title from params
+
   const navigation = useNavigation();
 
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      title: "Topic List",
+      title: material.length > 0 ? material[0].title : "Loading...",
       headerStyle: {
         backgroundColor: Colors.secondary,
       },
@@ -58,11 +31,51 @@ const TopicLists = () => {
         fontFamily: "outfit-bold",
       },
     });
-  }, []);
+  }, [navigation, material]);
+
+  useEffect(() => {
+    const fetchMaterialData = async () => {
+      try {
+        const materialsQuery = query(
+          collection(db, "materials"),
+          where("category", "==", category)
+        );
+
+        const querySnapshot = await getDocs(materialsQuery);
+        const materialData = querySnapshot.docs.map((doc) => doc.data());
+
+        if (materialData.length > 0) {
+          setMaterial(materialData);
+        } else {
+          Alert.alert("Error", "Material not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching material: ", error);
+        Alert.alert("Error", "Failed to fetch material data.");
+      }
+    };
+
+    fetchMaterialData();
+  }, [category]);
 
   const renderItem = ({ item, index }) => (
-    <Link href={"/topic"} asChild>
-      <TouchableOpacity style={styles.pickerButton}>
+    <View>
+      <TouchableOpacity
+        style={styles.pickerButton}
+        onPress={() => {
+          router.push({
+            pathname: `/activity/${item.title}`, // New edit screen path
+            params: {
+              id: item.id,
+              category: item.category,
+              title: item.title,
+              imageUrl: item.imageUrl,
+              videoUrls: item.videoUrls,
+              pdfUrls: item.pdfUrls,
+            },
+          });
+        }}
+      >
         <View style={styles.categoryContent}>
           <View
             style={{
@@ -87,7 +100,7 @@ const TopicLists = () => {
           <Text style={styles.categoryText}>{item.title}</Text>
         </View>
       </TouchableOpacity>
-    </Link>
+    </View>
   );
 
   return (
@@ -96,12 +109,16 @@ const TopicLists = () => {
       <Text style={styles.subtitle}>
         Discover Essential Topics and Enhance Your Learning Journey
       </Text>
-      <FlatList
-        data={categories}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-      />
+      {material.length > 0 ? (
+        <FlatList
+          data={material}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+        />
+      ) : (
+        <Text style={styles.loadingText}>Loading...</Text>
+      )}
     </View>
   );
 };
@@ -117,26 +134,9 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 30,
     fontFamily: "outfit-bold",
-    // marginBottom: 20,
     textAlign: "center",
     color: Colors.primary,
     letterSpacing: 1,
-  },
-  categoryContainer: {
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 12,
-    backgroundColor: "#ffffff",
-    shadowColor: "#171717",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 2.5,
-    elevation: 2, // Android shadow
-    transform: [{ scale: 1 }],
-    transition: "transform 0.2s",
   },
   pickerButton: {
     flexDirection: "row",
@@ -153,10 +153,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 10,
   },
-  icon: {
-    marginRight: 15,
-    color: Colors.primary,
-  },
   categoryText: {
     fontSize: 18,
     color: "#4a4a4a",
@@ -168,5 +164,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 20,
     textAlign: "center",
+  },
+  loadingText: {
+    textAlign: "center",
+    fontSize: 18,
+    color: "gray",
+    marginTop: 20,
   },
 });

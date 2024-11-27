@@ -1,12 +1,14 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import "firebase/storage"; // If you are using storage for images
 import {
   initializeAuth,
   getAuth,
   getReactNativePersistence,
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -22,6 +24,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 // Initialize Firestore
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 // Initialize Firebase Authentication
 // Initialize Firebase Auth with AsyncStorage for persistence
 let auth;
